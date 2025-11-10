@@ -180,6 +180,7 @@ public class Model extends Observable {
      * 1. There is at least one empty space on the board.
      * 2. There are two adjacent tiles with the same value.
      */
+    //我宣布个事我是个傻逼
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
         int boardlength = b.size();
