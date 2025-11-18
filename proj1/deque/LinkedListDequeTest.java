@@ -3,7 +3,7 @@ package deque;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-
+//我好困啊为什么我还在写这个jb东西
 /** Performs some basic linked list tests. */
 public class LinkedListDequeTest {
 
