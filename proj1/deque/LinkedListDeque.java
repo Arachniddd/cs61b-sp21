@@ -55,7 +55,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         this.tail.next = tempNode;
         tempNode.previous = this.tail;
         tempNode.next = this.sentinel;
-        this.tail.previous = tempNode;
+        this.sentinel.previous = tempNode;
         this.tail = tempNode;
         this.size++;
     }
@@ -85,14 +85,18 @@ public class LinkedListDeque<T> implements Iterable<T> {
     {
         if (this.isEmpty()) return null;
         T value = this.head.value;
-        if (this.size == 1) {
+        if (this.size == 1)
+        {
             this.head = this.tail =null;
             sentinel.previous = null;
             sentinel.next = null;
             size = 0; // 设置head和tail为sentinel
-        } else {
+        }
+        else
+        {
             this.head = this.head.next;
             this.head.previous = null;
+            this.sentinel.next = this.head;
         }
         this.size--;
         return value;
@@ -110,6 +114,7 @@ public class LinkedListDeque<T> implements Iterable<T> {
         } else {
             this.tail = this.tail.previous;
             this.tail.next = null;
+            this.sentinel.previous = this.tail;
         }
         this.size--;
         return value;
