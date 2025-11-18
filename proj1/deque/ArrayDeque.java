@@ -46,7 +46,7 @@ public class ArrayDeque<T> implements Iterable<T> {
 
     public void addFirst(T item)
     {
-        if(isFull()) resize(array.length); * 2);
+        if(isFull()) resize(array.length * 2);
         head = (head - 1 + array.length) % array.length;
         array[head] = item;
         size++;
@@ -54,7 +54,7 @@ public class ArrayDeque<T> implements Iterable<T> {
 
     public void addLast(T item)
     {
-        if(isFull()) resize(array.length); * 2);
+        if(isFull()) resize(array.length * 2);
         array[tail] = item;
         tail = (tail + 1) % array.length;
         size++;
