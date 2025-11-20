@@ -3,7 +3,7 @@ package deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LinkedListDeque<T> implements Iterable<T> {
+public class LinkedListDeque<T> implements Iterable<T>, Deque<T> {
     private Node sentinel;
     private int size;
 
@@ -15,9 +15,6 @@ public class LinkedListDeque<T> implements Iterable<T> {
         size = 0;
     }
 
-    public boolean isEmpty() {
-        return size == 0;
-    }
 
     // 头插
     public void addFirst(T item) {
