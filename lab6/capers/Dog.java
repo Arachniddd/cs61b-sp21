@@ -11,10 +11,11 @@ import static capers.Utils.*;
 /** Represents a dog that can be serialized.
  * @author TODO
 */
-public class Dog implements Serializable{ // TODO
+public class Dog { // TODO
 
     /** Folder that dogs live in. */
-    static final File DOG_FOLDER = CapersRepository.DogsFolder;
+    static final File DOG_FOLDER = null; // TODO (hint: look at the `join`
+                                         //      function in Utils)
 
     /** Age of dog. */
     private int age;
@@ -43,10 +44,7 @@ public class Dog implements Serializable{ // TODO
      */
     public static Dog fromFile(String name) {
         // TODO (hint: look at the Utils file)
-        String DogDir = name + ".txt";
-        File DogFile = join(DOG_FOLDER, DogDir);
-        Dog Oriented = readObject(DogFile, Dog.class);
-        return Oriented;
+        return null;
     }
 
     /**
@@ -63,9 +61,6 @@ public class Dog implements Serializable{ // TODO
      */
     public void saveDog() {
         // TODO (hint: don't forget dog names are unique)
-        String DogDir = name + ".txt";
-        File DogFile = join(DOG_FOLDER, DogDir);
-        writeObject(DogFile, this);
     }
 
     @Override
