@@ -3,7 +3,11 @@ package capers;
 import java.io.File;
 import java.io.Serializable;
 import static capers.Utils.*;
+<<<<<<< HEAD
 //goback
+=======
+
+>>>>>>> parent of b395630 (deleted)
 /** Represents a dog that can be serialized.
  * @author TODO
 */
