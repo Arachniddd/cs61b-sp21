@@ -1,0 +1,6 @@
+Hello world
+It's my time
+Will the mark \n change the line?
+Or this form n ?
+Or this form '\n' ?
+I am king
