@@ -1,9 +1,8 @@
 package gitlet;
 
-// TODO: any imports you need here
 
 import gitlet.Utils.*;
-import java.util.Date; // TODO: You'll likely use this in this class
+import java.util.Date;
 import java.util.HashMap;
 
 /** Represents a gitlet commit object.
@@ -20,8 +19,6 @@ import java.util.HashMap;
  */
 public class Commit {
     /**
-     * TODO: add instance variables here.
-
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided one example for `message`.
@@ -31,8 +28,6 @@ public class Commit {
     private HashMap<String, String> Blobs; //the key is file name,the value is sha1 id.
     private Commit Parent;
     private String CommitID;
-
-    /* TODO: fill in the rest of this class. */
 
     public Commit(String message, Commit ParentCommit, HashMap<String, String> StagedBlobs)
     {
@@ -46,7 +41,7 @@ public class Commit {
      }
      else
      {
-         timestamp = new Date().toString();
+         timestamp = new Date().toString(); //TODO:Format needed to be modified.
          Blobs = new HashMap<>(ParentCommit.getBlobs());
          Parent = ParentCommit;
      }
@@ -58,11 +53,14 @@ public class Commit {
      }
 
      //After all the variables set,calculate the sha1ID
+     byte[] tobecalculated = Utils.serialize(Blobs);
      CommitID=Utils.sha1(message,
              timestamp,
              Parent == null ? "" : Parent.getCommitID(),
-             Blobs.toString());
+             tobecalculated);
     }
+
+    //TODO:removed files to be dealt with!
 
     public String getMessage()
     {

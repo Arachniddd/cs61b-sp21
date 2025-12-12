@@ -10,13 +10,13 @@ import java.io.File;
 public class Blob {
     //instance variables
 
-    private String BlobID;
-    private byte[] content; //Nobody wants to know the real file!
+    private final String BlobID;
+    private final byte[] content; //Nobody wants to know the real file!
 
     public Blob(File NewFile)
     {
         content = Utils.readContents(NewFile);
-        BlobID = Utils.sha1(Utils.readContentsAsString(NewFile));
+        BlobID = Utils.sha1((Object) content);
     }
 
     public String getBlobID()
