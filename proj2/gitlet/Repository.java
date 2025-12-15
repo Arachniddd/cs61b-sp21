@@ -1,6 +1,8 @@
 package gitlet;
 
 import java.io.File;
+import java.util.HashMap;
+
 import static gitlet.Utils.*;
 
 /** Represents a gitlet repository.
@@ -29,11 +31,13 @@ public class Repository {
     /** So does the removal area directory. */
     public static final File RemovalArea = join(StagingArea, "RemovalArea");
     /** The commit directory. */
-    public static final File Commits =  join(StagingArea, "Commits");
+    public static final File Commits =  join(GITLET_DIR, "Commits");
     /** The blob directory. */
-    public static final File Blobs =  join(StagingArea, "Blobs");
+    public static final File Blobs =  join(GITLET_DIR, "Blobs");
     /** The head pointer. */
     public static final File HEAD = join(GITLET_DIR, "HEAD");
+    /** The branch pointer. */
+    public static final File Branches = join(GITLET_DIR, "Branches");
     /** The branch pointer. */
     public static final File refs = join(GITLET_DIR, "refs");
     public static final File heads = join(GITLET_DIR, "heads");
@@ -54,9 +58,25 @@ public class Repository {
 
 
     /** We can create a commit in the Commits directory! */
-    private void SaveCommit(Commit commit)
-    {}
+    private static void SaveCommit(Commit commit)
+    {
+        File Thiscommit = Utils.join(Commits, commit.getCommitID());
+        Utils.writeObject(Thiscommit, commit);
+    }
 
+    private static File FindHead()
+    {
+        File head = Utils.join(heads, "head");
+        String NowBranch = Utils.readContentsAsString(head);
+        return Utils.join(Branches, NowBranch);
+    }
+
+    private static File FindCommit()
+    {
+        File branch = FindHead();
+        String CommitID = Utils.readContentsAsString(branch);
+        return Utils.join(Commits,  CommitID);
+    }
 
     /** When we call 'init' methond, we should create a '.gitlet' directory in cwd.
      *  and create a commit with the message 'initial commit'
@@ -67,11 +87,92 @@ public class Repository {
         //if .gitlet dir doesn't exists
         if(!GITLET_DIR.exists())
         {
-            GITLET_DIR.mkdir();
+            GITLET_DIR.mkdirs();
+            StagingArea.mkdirs();
+            AdditionArea.mkdirs();
+            RemovalArea.mkdirs();
+            Commits.mkdirs();
+            Blobs.mkdirs();
+
+            /* make a initial commit */
+            Commit initial = new Commit("initial commit", null, null, null);
+            /* save the commit. */
+            SaveCommit(initial);
+
+            /* create a master branch and a head, points to the initial commit. */
+            File branch = Utils.join(Branches, "master");
+            Utils.writeContents(branch, initial.getCommitID());
+
+            File head = Utils.join(heads, "head");
+            Utils.writeContents(head, "master");
         }
         else
         {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
+        }
+    }
+
+    /**
+     * When we add, we put the corresponding file into the staging area.
+     * First, we need to find the file according to its name.
+     * Second, create a hashmap, and copy the map from the current StagingArea.
+     * Then append the new map to this file.
+     * Save the file.
+     *
+     * If file has been saved in the directory, don't do anything.
+     */
+    public static void add(String filename)
+    {
+        File Addition = Utils.join(AdditionArea, "Addition");
+        File Removal = Utils.join(RemovalArea, "Removal");
+
+        File file = Utils.join(CWD, filename);
+        /* If file doesn't exists. Print a warning. */
+        if(!file.exists())
+        {
+            System.out.println("File does not exist.");
+            return;
+        }
+
+        Blob blob = new Blob(file);
+
+        HashMap<String, String> addition =
+                Addition.exists()
+                        ? Utils.readObject(Addition, HashMap.class)
+                        : new HashMap<>();
+
+        HashMap<String, String> removal =
+                Removal.exists()
+                        ? Utils.readObject(Removal, HashMap.class)
+                        : new HashMap<>();
+
+        /* read the current addition area from current HEAD. */
+        File NowCommit = FindCommit();
+        Commit commit = Utils.readObject(NowCommit, Commit.class);
+        HashMap<String,String> CommitBlobs = commit.getBlobs();
+
+        /* if the file is in the removal area, remove it from removal area. */
+        if(removal.get(filename) != null)
+        {
+            removal.remove(filename);
+            Utils.writeObject(Removal, removal);
+        }
+
+        /* if the file id equals the id in the blobs, remove it from the existing addition area.
+        *  else, save the file in the addition area and create a blob in the Blobs directory.
+        */
+        if(blob.getBlobID().equals(CommitBlobs.get(filename)))
+        {
+            addition.remove(filename);
+            Utils.writeObject(Addition, addition);
+            return;
+        }
+        else
+        {
+           addition.put(filename, blob.getBlobID());
+           Utils.writeObject(Addition, addition);
+           File BlobFile = join(Blobs, blob.getBlobID());
+           Utils.writeObject(BlobFile, blob);
         }
     }
 }

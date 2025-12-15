@@ -39,6 +39,24 @@
 2. **public byte[] getContent():** Get the **serialized** file. 
 
 
+### Repository
+
+* This class is a tool class.It represents the working directory of gitlet.
+
+**A repository contains:**
+
+1. **Staging area:** Save the temporary files.
+2. **Commits:** Save commits.
+3. **Blobs:** Save blobs.
+
+#### Fields
+
+1. **public static void init():** Initial a '.gitlet' directory with subdirectories and create a initial commit.
+2. **public static void add(String filename):** Add a file into staging area(addition area).If the file is in the removal area, remove it from removal area.
+If the file is the same as the file in the HEAD, remove it from the current addition area.
+Else, add the file and create a blob in the Blobs directory.
+
+
 ## Algorithms
 
 ## Persistence

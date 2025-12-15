@@ -1,5 +1,6 @@
 package gitlet;
 import java.io.File;
+import java.io.Serializable;
 
 /** Represents a gitlet blob object.
 
@@ -7,7 +8,7 @@ import java.io.File;
  * - Real file content (serialized version)
  * - A SHA1 ID
  */
-public class Blob {
+public class Blob implements Serializable {
     //instance variables
 
     private final String BlobID;
