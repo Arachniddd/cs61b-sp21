@@ -34,13 +34,11 @@ public class Repository {
     public static final File Commits =  join(GITLET_DIR, "Commits");
     /** The blob directory. */
     public static final File Blobs =  join(GITLET_DIR, "Blobs");
-    /** The head pointer. */
-    public static final File HEAD = join(GITLET_DIR, "HEAD");
     /** The branch pointer. */
     public static final File Branches = join(GITLET_DIR, "Branches");
-    /** The branch pointer. */
+    /** The head pointer. */
     public static final File refs = join(GITLET_DIR, "refs");
-    public static final File heads = join(GITLET_DIR, "heads");
+    public static final File heads = join(refs, "heads");
 
 
     /** What can we do to a repository?
@@ -76,6 +74,22 @@ public class Repository {
         File branch = FindHead();
         String CommitID = Utils.readContentsAsString(branch);
         return Utils.join(Commits,  CommitID);
+    }
+
+    private static HashMap<String,String> GetAdditionMap()
+    {
+        File Addition =  Utils.join(AdditionArea, "Addition");
+        return Addition.exists() ?
+                Utils.readObject(Addition, HashMap.class)
+                : new HashMap<>();
+    }
+
+    private static HashMap<String,String> GetRemovalMap()
+    {
+        File Removal =  Utils.join(RemovalArea, "Removal");
+        return Removal.exists() ?
+                Utils.readObject(Removal, HashMap.class)
+                : new HashMap<>();
     }
 
     /** When we call 'init' methond, we should create a '.gitlet' directory in cwd.
@@ -136,15 +150,9 @@ public class Repository {
 
         Blob blob = new Blob(file);
 
-        HashMap<String, String> addition =
-                Addition.exists()
-                        ? Utils.readObject(Addition, HashMap.class)
-                        : new HashMap<>();
+        HashMap<String, String> addition = GetAdditionMap();
 
-        HashMap<String, String> removal =
-                Removal.exists()
-                        ? Utils.readObject(Removal, HashMap.class)
-                        : new HashMap<>();
+        HashMap<String, String> removal =  GetRemovalMap();
 
         /* read the current addition area from current HEAD. */
         File NowCommit = FindCommit();
@@ -173,6 +181,87 @@ public class Repository {
            Utils.writeObject(Addition, addition);
            File BlobFile = join(Blobs, blob.getBlobID());
            Utils.writeObject(BlobFile, blob);
+        }
+    }
+
+    public static void commit(String message)
+    {
+        /* if message is null, throw a warning. */
+        if (message == null || message.trim().isEmpty())
+        {
+            System.out.println("Please enter a commit message.");
+            return;
+        }
+
+        /* find the addtion and the removal map. If they are all null, throw a warning. */
+        File Addition = Utils.join(AdditionArea, "Addition");
+        File Removal = Utils.join(RemovalArea, "Removal");
+
+
+        if (!Addition.exists() && !Removal.exists())
+        {
+            System.out.println("No changes added to the commit.");
+            return;
+        }
+
+        HashMap<String, String> addition = GetAdditionMap();
+        HashMap<String, String> removal = GetRemovalMap();
+
+        File ParentCommitFile = FindCommit();
+        Commit ParentCommit = Utils.readObject(ParentCommitFile, Commit.class);
+
+        /* Create a new commit. */
+        Commit commit = new Commit(message, ParentCommit, addition, removal);
+        File CommitFile = join(Commits, commit.getCommitID());
+        Utils.writeObject(CommitFile, commit);
+
+        /* Clear addition area and removal area. */
+        Utils.restrictedDelete(Addition);
+        Utils.restrictedDelete(Removal);
+
+        /* Move the HEAD pointer. */
+        File HEAD = FindHead();
+        Utils.writeContents(HEAD, commit.getCommitID());
+    }
+
+    public static void rm(String filename)
+    {
+        File file = Utils.join(CWD, filename);
+
+        File Addition =  Utils.join(AdditionArea, "Addition");
+        File Removal = Utils.join(RemovalArea, "Removal");
+
+        HashMap<String, String> addition = GetAdditionMap();
+        HashMap<String, String> removal = GetRemovalMap();
+
+        File CommitFile = FindCommit();
+        Commit commit = Utils.readObject(CommitFile, Commit.class);
+        HashMap<String, String> CommitBlobs = commit.getBlobs();
+
+        /* If doc doesn't exist. */
+        if (!addition.containsKey(filename) && !CommitBlobs.containsKey(filename))
+        {
+            System.out.println("No reason to remove the file.");
+            return;
+        }
+
+        /* If the file is tracked by the current addition area. */
+        if (addition.get(filename) != null)
+        {
+            addition.remove(filename);
+            Utils.writeObject(Addition, addition);
+        }
+
+        /* If the file is tracked by the current HEAD. */
+        if (CommitBlobs.containsKey(filename))
+        {
+            removal.put(filename, CommitBlobs.get(filename));
+            Utils.writeObject(Removal, removal);
+            /* If the file exists in the CWD.Delete it. */
+            if (file.exists())
+            {
+                file.delete();
+            }
         }
     }
 }
