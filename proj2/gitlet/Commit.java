@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 
 /** Represents a gitlet commit object.
@@ -28,32 +29,37 @@ public class Commit implements Serializable {
     private Commit Parent;
     private final String CommitID;
 
-    public Commit(String message, Commit ParentCommit, HashMap<String, String> AddtionsBlobs, HashMap<String, String> RemovalBlobs)
+    public Commit(String message, Commit ParentCommit, HashMap<String, String> AdditionsBlobs, HashMap<String, String> RemovalBlobs)
     {
      this.message = message;
      Parent = ParentCommit;
      if (ParentCommit == null)
      {
-         timestamp="00:00:00 UTC, Thursday, 1 January 1970";
+         timestamp="Thu Jan 1 00:00:00 1970 -0800";
          Blobs = new HashMap<>();
          Parent = null;
      }
      else
      {
-         timestamp = new Date().toString(); //TODO:Format needed to be modified.
+         Date date = new Date();
+         Formatter formatter = new Formatter();
+         formatter.format("%1$ta %1$tb %1$td %1$tT %1$tY %1$tz", date);
+         timestamp = formatter.toString();
          Blobs = new HashMap<>(ParentCommit.getBlobs());
      }
 
      //add the blobs in the staging area(given all the blobs in addition area are all 'new' blobs)
-     for(String filename : AddtionsBlobs.keySet())
-     {
-         Blobs.put(filename, AddtionsBlobs.get(filename));
+     if(AdditionsBlobs != null) {
+         for (String filename : AdditionsBlobs.keySet()) {
+             Blobs.put(filename, AdditionsBlobs.get(filename));
+         }
      }
 
      //remove the blobs in the removal area
-     for(String filename : RemovalBlobs.keySet())
-     {
-         Blobs.remove(filename);
+     if(RemovalBlobs != null) {
+         for (String filename : RemovalBlobs.keySet()) {
+             Blobs.remove(filename);
+         }
      }
 
      //After all the variables set,calculate the sha1ID
