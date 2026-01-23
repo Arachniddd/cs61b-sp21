@@ -27,17 +27,20 @@ public class Commit implements Serializable {
     private final String timestamp;
     private final HashMap<String, String> Blobs; //the key is file name,the value is sha1 id.
     private Commit Parent;
+    private Commit SecondParent;
     private final String CommitID;
 
-    public Commit(String message, Commit ParentCommit, HashMap<String, String> AdditionsBlobs, HashMap<String, String> RemovalBlobs)
+    public Commit(String message, Commit ParentCommit, Commit SecondParentCommit, HashMap<String, String> AdditionsBlobs, HashMap<String, String> RemovalBlobs)
     {
      this.message = message;
      Parent = ParentCommit;
+     SecondParent = SecondParentCommit;
      if (ParentCommit == null)
      {
          timestamp="Thu Jan 1 00:00:00 1970 -0800";
          Blobs = new HashMap<>();
          Parent = null;
+         SecondParent = null;
      }
      else
      {
@@ -67,6 +70,7 @@ public class Commit implements Serializable {
      CommitID=Utils.sha1(message,
              timestamp,
              Parent == null ? "" : Parent.getCommitID(),
+             SecondParent == null ? "" : SecondParent.getCommitID(),
              tocalculate);
     }
 
@@ -94,5 +98,14 @@ public class Commit implements Serializable {
     public  String getCommitID()
     {
         return CommitID;
+    }
+
+    public Commit getSecondParent()
+    {
+        return SecondParent;
+    }
+
+    public String get(String fileName) {
+        return null;
     }
 }

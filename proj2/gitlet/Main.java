@@ -32,6 +32,7 @@ public class Main {
                 if  (args.length < 2)
                 {
                     System.out.println("No message specified.");
+                    break;
                 }
                 String message = args[1];
                 Repository.commit(message);
@@ -40,6 +41,7 @@ public class Main {
                 if  (args.length < 2)
                 {
                     System.out.println("No filename specified.");
+                    break;
                 }
                 Repository.rm(args[1]);
                 break;
@@ -53,6 +55,7 @@ public class Main {
                 if  (args.length < 2)
                 {
                     System.out.println("No message specified.");
+                    break;
                 }
                 Repository.find(args[1]);
                 break;
@@ -63,19 +66,48 @@ public class Main {
                 if(args[1].equals("--"))
                 {
                     Repository.checkout(args[2]);
+                    break;
                 }
                 else if(args.length == 2)
                 {
                     Repository.checkoutBranch(args[1]);
+                    break;
                 }
                 else if(args[2].equals("--"))
                 {
                     Repository.checkout(args[1], args[3]);
+                    break;
                 }
                 else
                 {
                     System.err.println("Invalid command!");
+                    break;
                 }
+            case "branch":
+                if(args.length < 2)
+                {
+                    System.out.println("No branch name specified.");
+                    break;
+                }
+                String branchName = args[1];
+                Repository.branch(branchName);
+                break;
+            case "rm-branch":
+                if(args.length < 2)
+                {
+                    System.out.println("No branch name specified.");
+                    break;
+                }
+                Repository.rm_branch(args[1]);
+                break;
+            case "merge":
+                if ( args.length < 2 )
+                {
+                    System.out.println("No branch name specified.");
+                    break;
+                }
+                Repository.merge(args[1]);
+                break;
         }
     }
 }
