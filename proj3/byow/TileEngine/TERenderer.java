@@ -18,6 +18,9 @@ public class TERenderer {
     private int xOffset;
     private int yOffset;
 
+    public TERenderer(int width, int height) {
+    }
+
     /**
      * Same functionality as the other initialization method. The only difference is that the xOff
      * and yOff parameters will change where the renderFrame method starts drawing. For example,

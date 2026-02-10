@@ -14,7 +14,7 @@ public class BoringWorldDemo {
 
     public static void main(String[] args) {
         // initialize the tile rendering engine with a window of size WIDTH x HEIGHT
-        TERenderer ter = new TERenderer();
+        TERenderer ter = new TERenderer(WIDTH, HEIGHT);
         ter.initialize(WIDTH, HEIGHT);
 
         // initialize tiles
